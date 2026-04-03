@@ -1,26 +1,129 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Color Palette - Deep Sea Dark Mode */
+  --background: #060e20;
+  
+  --primary: #ba9eff;
+  --primary-container: #ae8dff;
+  --primary-dim: #8455ef;
+  --on-primary: #39008c;
+  
+  --secondary: #34b5fa;
+  --secondary-container: #006591;
+  --secondary-dim: #17a8ec;
+  --on-secondary: #003047;
+  
+  --surface-lowest: #000000;
+  --surface-low: #091328;
+  --surface: #060e20;
+  --surface-high: #141f38;
+  --surface-highest: #192540;
+  --surface-bright: #1f2b49;
+  --surface-tint: #ba9eff;
+  
+  --on-surface: #dee5ff;
+  --on-surface-variant: #a3aac4;
+  
+  --outline-variant: #40485d;
 }
 
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-foreground: var(--on-surface);
+  --font-sans: var(--font-inter), sans-serif;
+  --font-heading: var(--font-plus-jakarta), sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--background);
+  color: var(--on-surface);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Gradients & Utilities */
+.gradient-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.surface-lowest { background-color: var(--surface-lowest); }
+.surface-low { background-color: var(--surface-low); }
+.surface { background-color: var(--surface); }
+.surface-high { background-color: var(--surface-high); }
+.surface-highest { background-color: var(--surface-highest); }
+
+.glass-floating {
+  background-color: color-mix(in srgb, var(--surface-bright) 60%, transparent);
+  backdrop-filter: blur(24px);
+}
+
+.glass-topbar {
+  background-color: transparent;
+  backdrop-filter: blur(20px);
+}
+
+.shadow-ambient {
+  box-shadow: 0 0 60px -5px rgba(0, 0, 0, 0.08); /* 000 at 8%, 40-60px blur, -5px spread */
+}
+
+/* Ghost borders */
+.ghost-border {
+  border: 1px solid color-mix(in srgb, var(--outline-variant) 15%, transparent);
+}
+
+/* Typography styles matching spec */
+.display-lg {
+  font-family: var(--font-heading);
+  font-size: 3.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.display-sm {
+  font-family: var(--font-heading);
+  font-size: 2.25rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.headline-md {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.title-md {
+  font-family: var(--font-sans);
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+.body-md {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.label-md {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.text-on-surface-variant {
+  color: var(--on-surface-variant);
+}
+
+.text-on-surface {
+  color: var(--on-surface);
 }
