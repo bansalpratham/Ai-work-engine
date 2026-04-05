@@ -3,17 +3,18 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,18 +29,37 @@ export default function LoginPage() {
     setIsLoading(true);
     setError("");
 
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      setIsLoading(false);
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters");
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const result = await signIn("credentials", {
-        email: formData.email,
-        password: formData.password,
-        redirect: false,
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
       });
 
-      if (result?.error) {
-        setError(result.error);
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Registration failed");
       } else {
-        router.push("/dashboard");
-        router.refresh();
+        router.push("/login?registered=true");
       }
     } catch (error) {
       setError("An unexpected error occurred");
@@ -47,6 +67,7 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   };
+
   return (
     <div className="min-h-screen flex items-center justify-center background relative overflow-hidden">
       {/* Abstract Background Blobs */}
@@ -55,8 +76,8 @@ export default function LoginPage() {
 
       <Card level="high" padding="xl" glow={true} className="w-full max-w-lg z-10 ghost-border border border-[var(--outline-variant)]">
         <div className="text-center mb-8">
-          <h1 className="display-sm mb-2">Welcome Back</h1>
-          <p className="title-md text-on-surface-variant">Sign in to your Cognitive Nebula</p>
+          <h1 className="display-sm mb-2">Create Account</h1>
+          <p className="title-md text-on-surface-variant">Join the Cognitive Nebula</p>
         </div>
 
         {error && (
@@ -66,6 +87,19 @@ export default function LoginPage() {
         )}
 
         <form className="flex flex-col space-y-6" onSubmit={handleSubmit}>
+          <div className="flex flex-col space-y-2">
+            <label className="label-md text-on-surface-variant uppercase tracking-wider">Full Name</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              className="bg-[var(--surface-lowest)] text-on-surface border border-[var(--outline-variant)] rounded-xl px-4 py-3 focus:outline-none focus:border-[var(--primary)] transition-colors"
+              placeholder="John Doe"
+            />
+          </div>
+
           <div className="flex flex-col space-y-2">
             <label className="label-md text-on-surface-variant uppercase tracking-wider">Email Address</label>
             <input
@@ -78,15 +112,27 @@ export default function LoginPage() {
               placeholder="you@university.edu"
             />
           </div>
+
           <div className="flex flex-col space-y-2">
-            <div className="flex justify-between">
-               <label className="label-md text-on-surface-variant uppercase tracking-wider">Password</label>
-               <span className="label-md text-primary cursor-pointer hover:underline">Forgot?</span>
-            </div>
+            <label className="label-md text-on-surface-variant uppercase tracking-wider">Password</label>
             <input
               type="password"
               name="password"
               value={formData.password}
+              onChange={handleChange}
+              required
+              minLength={6}
+              className="bg-[var(--surface-lowest)] text-on-surface border border-[var(--outline-variant)] rounded-xl px-4 py-3 focus:outline-none focus:border-[var(--primary)] transition-colors"
+              placeholder="••••••••"
+            />
+          </div>
+
+          <div className="flex flex-col space-y-2">
+            <label className="label-md text-on-surface-variant uppercase tracking-wider">Confirm Password</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
               onChange={handleChange}
               required
               className="bg-[var(--surface-lowest)] text-on-surface border border-[var(--outline-variant)] rounded-xl px-4 py-3 focus:outline-none focus:border-[var(--primary)] transition-colors"
@@ -100,13 +146,13 @@ export default function LoginPage() {
             className="w-full mt-4"
             disabled={isLoading}
           >
-            {isLoading ? "Signing in..." : "Sign In"}
+            {isLoading ? "Creating Account..." : "Sign Up"}
           </Button>
         </form>
 
         <div className="mt-8 text-center">
            <p className="body-md text-on-surface-variant">
-             Don&apos;t have an account? <Link href="/register" className="text-secondary hover:underline">Sign up</Link>
+             Already have an account? <Link href="/login" className="text-secondary hover:underline">Sign in</Link>
            </p>
         </div>
       </Card>
